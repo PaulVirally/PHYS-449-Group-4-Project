@@ -1,11 +1,12 @@
 {
     "model" : {
-        "topology" : [11, 6, 1],
+        "topology" : [11, 6, 2],
         "activation" : "tanh"
     },
 
     "optim" : {
         "learning_rate" : 1e-3,
-        "num_epochs": 1
+        "num_epochs": 30,
+        "batch_size": 100
     }
 }
