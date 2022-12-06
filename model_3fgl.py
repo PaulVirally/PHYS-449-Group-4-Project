@@ -7,8 +7,8 @@ class Model3FGL(nn.Module):
         super().__init__()
 
         # The network is defined by the topology
-        topology = params.model['topology']
-        activation = params.model['activation']
+        topology = params.model.topology
+        activation = params.model.activation
         self.network = nn.Sequential()
         for neurons_in, neurons_out in zip(topology[:-1], topology[1:]):
             self.network.append(nn.Linear(neurons_in, neurons_out))
@@ -18,10 +18,10 @@ class Model3FGL(nn.Module):
         self.loss = nn.CrossEntropyLoss()
 
         # Adam optimizer
-        self.optimizer = optim.Adam(self.network.parameters(), lr=params.optim['lerning_rate'])
+        self.optimizer = optim.Adam(self.network.parameters(), lr=params.optim.learning_rate)
 
         # Number of epochs
-        self.num_epochs = params.optim['num_epochs'] 
+        self.num_epochs = params.optim.num_epochs
 
     def forward(self, x):
         return self.network(x)
