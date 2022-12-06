@@ -31,6 +31,7 @@ def data_dup(infile):
     
 
 if __name__ == '__data_dup__':
+    #python data_dup.py --data data/gll_psc_v16.fit --outfile data/over_3fgl.npz
     parser = argparse.ArgumentParser(description='Duplicates pulsars in dataset to even out number of AGNs and pulsars for oversampling')
     parser.add_argument('--data', help='A file/path containing input data')
     parser.add_argument('--outfile', help='Desired name of output file (include file path if needed, ex. data/over_3fgl.npz)')
