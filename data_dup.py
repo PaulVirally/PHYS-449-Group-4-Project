@@ -1,5 +1,5 @@
 import numpy as np
-import argparse
+import argparse, random
 from astropy.io import fits
 
 def data_dup(infile):
@@ -21,20 +21,20 @@ def data_dup(infile):
     pulsars = []
     for i in range(classes.size):
         #pulsars (classification labels in 3FGL: PSR, psr)
-        if hdul_fgl[1].data[i]['CLASS1'] == 'PSR' or data_FGL[i]['CLASS1'] == 'psr':
-            pulsars.append(data_FGL[i])
+        if hdul_fgl[1].data[i]['CLASS1'] == 'PSR' or hdul_fgl[1].data[i]['CLASS1'] == 'psr':
+            pulsars.append(hdul_fgl[1].data[i])
 
     for i in range(oversample):
         duplicated.append(random.choice(pulsars))
 
-    duplicated = np.array(duplicated)
+    duplicated = np.array(duplicated, dtype=object)
     
 
-if __name__ == '__data_dup__':
-    #python data_dup.py --data data/gll_psc_v16.fit --outfile data/over_3fgl.npz
+if __name__ == '__main__':
+    #python data_dup.py --data data/gll_psc_v16.fit --outfile data/over_3fgl
     parser = argparse.ArgumentParser(description='Duplicates pulsars in dataset to even out number of AGNs and pulsars for oversampling')
     parser.add_argument('--data', help='A file/path containing input data')
-    parser.add_argument('--outfile', help='Desired name of output file (include file path if needed, ex. data/over_3fgl.npz)')
+    parser.add_argument('--outfile', help='Desired name of output file (include file path if needed, ex. data/over_3fgl)')
     
     args = parser.parse_args()
     
