@@ -1,6 +1,6 @@
 # Group 4 Final Project
 
-The goal of this project is to reproduce a subset of the paper "Machine learning methods for constructing probabilistic Fermi-LAT catalogs" by A. Bhat and D. Malyshev. The paper can be found [here](https://www.aanda.org/articles/aa/full_html/2022/04/aa40766-21/aa40766-21.html)
+The goal of this project is to reproduce a subset of the paper "Machine learning methods for constructing probabilistic Fermi-LAT catalogs" by A. Bhat and D. Malyshev. The paper can be found [here](https://www.aanda.org/articles/aa/full_html/2022/04/aa40766-21/aa40766-21.html).
 
 Group Members:
 * [Joseph Elliott](https://github.com/Pojoe71)
