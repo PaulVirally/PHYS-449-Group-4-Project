@@ -62,8 +62,8 @@ def train_model(model, params, dataset, quiet=False):
 
     return accuracies, losses
 
-def vary_topology(params, dataset):
-    '''Vary the topology of the model and return the results'''
+def vary_topology(params, dataset, oversampled):
+    '''Vary the topology of the model and save the results'''
     num_input = params.model.topology[0] 
     num_output = params.model.topology[-1]
     num_hidden_layers = 3 # TODO: Should this be a parameter to the function?
@@ -71,9 +71,9 @@ def vary_topology(params, dataset):
     params.optim.num_epochs = 1000 # For consistency with the paper
 
     lr = str(params.optim.learning_rate).replace('.', 'p')
-    results_dir = f'results/oversampled_{params.model.activation}_LR{lr}_{params.optim.optim}'
+    results_dir = f'results/{"oversampled_" if oversampled else ""}{params.model.activation}_LR{lr}_{params.optim.optim}'
     os.makedirs(results_dir, exist_ok=True)
-    fig_dir = f'figures/oversampled_{params.model.activation}_LR{lr}_{params.optim.optim}'
+    fig_dir = f'figures/{"oversampled_" if oversampled else ""}{params.model.activation}_LR{lr}_{params.optim.optim}'
     os.makedirs(fig_dir, exist_ok=True)
 
     for hidden_layers in range(1, num_hidden_layers+1):
@@ -90,7 +90,7 @@ def vary_topology(params, dataset):
             print(f'Topology: {topology}, Accuracy: {accuracies[-1]:.5f}, Loss: {losses[-1]:.5e}')
 
             # Save the results
-            np.savez(f'{results_dir}/3fgl_{topology}.npz', accuracies=accuracies, losses=losses, params=params)
+            np.savez_compressed(f'{results_dir}/3fgl_{topology}.npz', accuracies=accuracies, losses=losses, params=params)
 
             # Plot the results and save the figure
             epochs = np.arange(len(accuracies)) + 1
@@ -111,35 +111,46 @@ def vary_topology(params, dataset):
             fig.savefig(f'{fig_dir}/3fgl_{topology}.pdf')
             plt.close()
 
+def vary_everything(params, dataset, oversampled):
+    '''Vary the topology and activation functions model and save the results'''
+    # ReLU
+    params.model.activation = 'relu'
+    vary_topology(params, dataset, oversampled)
+
+    # tanh
+    params.optim.activation = 'tanh'
+    vary_topology(params, dataset, oversampled)
+
 if __name__ == '__main__':
     # Load the data and params
     params = load_params('params/params_3fgl.json')
     dataset = load_data('data/over_3fgl.npz')
 
     # vary_topology(params, dataset)
+    vary_everything(params, dataset, oversampled=True)
 
-    # Create the 3FGL model
-    model3fgl = Model3FGL(params)
+    # # Create the 3FGL model
+    # model3fgl = Model3FGL(params)
 
-    # Train the 3FGL model
-    accuracies, losses = train_model(model3fgl, params, dataset) # TODO: Run the model with different toplologies and log the results
-    epochs = np.arange(len(accuracies)) + 1
+    # # Train the 3FGL model
+    # accuracies, losses = train_model(model3fgl, params, dataset) # TODO: Run the model with different toplologies and log the results
+    # epochs = np.arange(len(accuracies)) + 1
 
-    # Smooth out the accuracies and losses
-    acc_smooth = savgol_filter(accuracies, 11, 3)
-    loss_smooth = savgol_filter(losses, 11, 3)
+    # # Smooth out the accuracies and losses
+    # acc_smooth = savgol_filter(accuracies, 11, 3)
+    # loss_smooth = savgol_filter(losses, 11, 3)
 
-    # Plot the accuracy and loss
-    fig, ax = plt.subplots(1, 2, figsize=(12, 4), tight_layout=True)
-    ax[0].plot(epochs, accuracies, label='Raw', alpha=0.25)
-    ax[0].plot(epochs, acc_smooth, '--', color='C0', label='Smoothed')
-    ax[0].set_xlabel('Epoch')
-    ax[0].set_ylabel('Accuracy [%]')
-    ax[0].legend()
-    ax[1].plot(epochs, losses, label='Raw', alpha=0.25)
-    ax[1].plot(epochs, loss_smooth, '--', color='C0', label='Smoothed')
-    ax[1].set_xlabel('Epoch')
-    ax[1].set_ylabel('Loss')
-    ax[1].set_yscale('log')
-    ax[1].legend()
-    plt.show()
+    # # Plot the accuracy and loss
+    # fig, ax = plt.subplots(1, 2, figsize=(12, 4), tight_layout=True)
+    # ax[0].plot(epochs, accuracies, label='Raw', alpha=0.25)
+    # ax[0].plot(epochs, acc_smooth, '--', color='C0', label='Smoothed')
+    # ax[0].set_xlabel('Epoch')
+    # ax[0].set_ylabel('Accuracy [%]')
+    # ax[0].legend()
+    # ax[1].plot(epochs, losses, label='Raw', alpha=0.25)
+    # ax[1].plot(epochs, loss_smooth, '--', color='C0', label='Smoothed')
+    # ax[1].set_xlabel('Epoch')
+    # ax[1].set_ylabel('Loss')
+    # ax[1].set_yscale('log')
+    # ax[1].legend()
+    # plt.show()
