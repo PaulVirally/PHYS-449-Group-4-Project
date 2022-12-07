@@ -1,44 +1,28 @@
+import argparse
+import random
 import numpy as np
-import argparse, random, os
 from astropy.io import fits
 
-def data_dup(hdul_fgl, outfile):
-    global agn_mask, pulsar_mask, classes, data
-    classes = hdul_fgl[1].data['CLASS1']
+def extract_3fgl_features(data_path):
+    # Open the fits file
+    hdul = fits.open(data_path)
+
+    # Extract the AGNs and the pulsars
+    classes = hdul[1].data['CLASS1']
     agn_classes = ['psr  ', 'agn  ', 'FSRQ ', 'fsrq ', 'BLL  ', 'bll  ', 'BCU  ', 'bcu  ', 'RDG  ', 'rdg  ', 'NLSY1', 'nlsy1', 'ssrq ', 'sey  ']
     pulsar_classes = ['PSR  ', 'psr  ']
-    no_class = '     '
     agn_mask = np.isin(classes, agn_classes)
     pulsar_mask = np.isin(classes, pulsar_classes)
-    noclass_mask = classes == no_class
-    bad_data_mask = hdul_fgl[1].data['Signif_Curve'] == 0.0
 
-    oversample = sum(agn_mask) - sum(pulsar_mask)
+    # Some columns in the 3fgl dataset have bad data
+    bad_data_mask = hdul[1].data['Signif_Curve'] == 0.0
+    agn_mask = agn_mask & ~bad_data_mask
+    pulsar_mask = pulsar_mask & ~bad_data_mask
 
-    nrows1 = hdul_fgl[1].data.shape[0]
-    nrows = nrows1 + oversample
-    hdu = fits.BinTableHDU.from_columns(hdul_fgl[1].columns, nrows=nrows)
+    # Combine the AGNs and pulsars
+    data = hdul[1].data[agn_mask | pulsar_mask]
 
-    pulsars = hdul_fgl[1].data[pulsar_mask & ~bad_data_mask]
-
-    for colname in hdul_fgl[1].columns.names:
-        hdu.data[colname][nrows1:] = random.choice(pulsars[colname])
-
-    hdu.writeto('temptable.fits', overwrite=True)
-    hdul_v2 = fits.open('temptable.fits')
-
-    classes = hdul_v2[1].data['CLASS1']
-    agn_classes = ['agn', 'FSRQ', 'fsrq', 'BLL', 'bll', 'BCU', 'bcu', 'RDG', 'rdg', 'NLSY1', 'nlsy1', 'ssrq', 'sey']
-    pulsar_classes = ['PSR', 'psr']
-    agn_mask = np.isin(classes, agn_classes)
-    pulsar_mask = np.isin(classes, pulsar_classes)
-    noclass_mask = classes == no_class
-    bad_data_mask = hdul_v2[1].data['Signif_Curve'] == 0.0
-
-    data = hdul_v2[1].data[(agn_mask | pulsar_mask) & ~bad_data_mask] # data is both pulsars and AGNs
-    pulsars = hdul_v2[1].data[pulsar_mask & ~bad_data_mask]
-    agns = hdul_v2[1].data[agn_mask & ~bad_data_mask]
-    
+    # Extract the 11 features we need for 3fgl
     # The easy ones
     glat = data['GLAT']
     glon = data['GLON']
@@ -73,12 +57,41 @@ def data_dup(hdul_fgl, outfile):
             mev_500_index[i] = gamma[i] + b[i] * (500 / E_c[i])**b[i]
         else:
             mev_500_index[i] = alpha[i] + 2*beta[i] * np.log(500 / E_0[i])
-            
-    in_data = np.vstack((glat, glon, ln_energy_flux100, ln_unc_energy_flux100, ln_signif_curve, ln_var_index, hr12, hr23, hr34, hr45, mev_500_index))
-    out_data = np.isin(data['CLASS1'], agn_classes).astype(float)
-    np.savez_compressed(outfile, in_data=in_data, out_data=out_data)
 
-    
+    in_data = np.vstack((glat, glon, ln_energy_flux100, ln_unc_energy_flux100, ln_signif_curve, ln_var_index, hr12, hr23, hr34, hr45, mev_500_index))
+    out_data = np.isin(data['CLASS1'], agn_classes).astype(int)
+    return in_data.T, out_data
+
+def data_dup(data_path, out_path):
+    # Get the features
+    in_data, out_data = extract_3fgl_features(data_path)
+
+    # Get the indices of the AGNs and pulsars within the data
+    agn_idxs = np.where(out_data == 1)[0]
+    pulsar_idxs = np.where(out_data == 0)[0]
+
+    # There are more AGNs than pulsars, so we need to oversample the pulsars
+    oversample = agn_idxs.size
+
+    # Randomly sample pulsars to get the same number as AGNs
+    rng = np.random.default_rng()
+    new_pulsar_idxs = rng.choice(pulsar_idxs, size=oversample)
+    new_pulsars = in_data[new_pulsar_idxs]
+
+    # Remove the old pulsars from the data
+    in_data = np.delete(in_data, new_pulsar_idxs, axis=0)
+    out_data = np.delete(out_data, new_pulsar_idxs, axis=0)
+
+    # Add the new pulsars to the data
+    in_data = np.vstack((in_data, new_pulsars))
+    out_data = np.hstack((out_data, np.zeros(oversample)))
+
+    # Shuffle the data
+    rng.shuffle(in_data)
+    rng.shuffle(out_data)
+
+    # Save the data
+    np.savez(out_path, in_data=in_data, out_data=out_data)
 
 if __name__ == '__main__':
     #python data_dup.py --data data/gll_psc_v16.fit --outfile data/over_3fgl
@@ -88,8 +101,5 @@ if __name__ == '__main__':
     
     args = parser.parse_args()
     
-    hdul_fgl = fits.open(args.data)
-    
-    data_dup(hdul_fgl, args.outfile)
-    
+    data_dup(args.data, args.outfile)
     print("Oversampling complete")
