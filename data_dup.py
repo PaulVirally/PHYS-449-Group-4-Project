@@ -28,6 +28,8 @@ def data_dup(hdul_fgl, outfile):
     hdul_v2 = fits.open('temptable.fits')
 
     classes = hdul_v2[1].data['CLASS1']
+    agn_classes = ['agn', 'FSRQ', 'fsrq', 'BLL', 'bll', 'BCU', 'bcu', 'RDG', 'rdg', 'NLSY1', 'nlsy1', 'ssrq', 'sey']
+    pulsar_classes = ['PSR', 'psr']
     agn_mask = np.isin(classes, agn_classes)
     pulsar_mask = np.isin(classes, pulsar_classes)
     noclass_mask = classes == no_class
