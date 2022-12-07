@@ -17,14 +17,38 @@ class Model3FGL(nn.Module):
             self.network.append(nn.ReLU() if activation == 'relu' else nn.Tanh())
 
         # Cross entropy loss
-        self.loss = nn.CrossEntropyLoss()
+        self.loss_fn = nn.CrossEntropyLoss()
 
-        # Adam optimizer
-        self.optimizer = optim.Adam(self.network.parameters(), lr=params.optim.learning_rate)
+        # Optimizer
+        self.lbfgs = params.optim.optim == 'LBFGS'
+        if self.lbfgs:
+            # self.optimizer = optim.LBFGS(self.network.parameters(), lr=params.optim.learning_rate)
+            self.optimizer = optim.LBFGS(self.network.parameters())
+            # self.optimizer = optim.LBFGS(self.network.parameters(), history_size=10, max_iter=4)
+        else:
+            self.optimizer = optim.Adam(self.network.parameters(), lr=params.optim.learning_rate)
 
         # Number of epochs
         self.num_epochs = params.optim.num_epochs
         self.print_every = params.optim.print_every
+
+    def loss(self, y_pred, y, train=False, x=None):
+        if self.lbfgs and train:
+            def closure():
+                if torch.is_grad_enabled():
+                    self.optimizer.zero_grad()
+                y_ = self.forward(x)
+                loss = self.loss_fn(y_pred, y_)
+                if loss.requires_grad:
+                    loss.backward()
+                return loss
+            self.optimizer.step(closure)
+            y_ = self.forward(x)
+            loss = closure()
+            return loss
+
+        # Simply return the output of the loss function if we are not using LBFGS
+        return self.loss_fn(y_pred, y)
 
     def forward(self, x):
         return self.network(x)
@@ -40,12 +64,13 @@ class Model3FGL(nn.Module):
         for x, y in dataloader:
             # Forward pass
             y_pred = self.forward(x)
-            loss = self.loss(y_pred, y)
+            loss = self.loss(y_pred, y, train=True, x=x)
 
-            # Backprop
-            self.optimizer.zero_grad()
-            loss.backward()
-            self.optimizer.step()
+            # Backprop is done in the self.loss function if we are using LBFGS
+            if not self.lbfgs:
+                self.optimizer.zero_grad()
+                loss.backward()
+                self.optimizer.step()
 
             # Keep track of the loss and accuracy
             running_loss += loss.item()
