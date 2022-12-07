@@ -47,7 +47,7 @@ def train_model(model, params, dataset):
     losses = np.zeros(num_epochs)
     for epoch in range(num_epochs):
         # The paper re-splits the train and test sets at each epoch
-        train_dataloader, test_dataloader = split_data(dataset, train_ratio=0.7) # TODO: Should train_ratio in the the json file?
+        train_dataloader, test_dataloader = split_data(dataset, train_ratio=0.7) # TODO: Should train_ratio be in the the json file?
 
         # Train one epoch
         model.train_epoch(train_dataloader, epoch)
@@ -68,7 +68,7 @@ if __name__ == '__main__':
     model3fgl = Model3FGL(params)
 
     # Train the 3FGL model
-    accuracies, losses = train_model(model3fgl, params, dataset)
+    accuracies, losses = train_model(model3fgl, params, dataset) # TODO: Run the model with different toplologies and log the results
     epochs = np.arange(len(accuracies)) + 1
 
     # Smooth out the accuracies and losses
