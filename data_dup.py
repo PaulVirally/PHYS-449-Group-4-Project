@@ -103,4 +103,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     
     data_dup(args.data, args.outfile)
-    print("Oversampling complete")
+    print("Oversampling done")
