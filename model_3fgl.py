@@ -33,7 +33,7 @@ class Model3FGL(nn.Module):
         running_loss = 0
         samples_done = 0
         num_correct = 0
-        for epoch, (x, y) in enumerate(dataloader):
+        for x, y in dataloader:
             # Forward pass
             y_pred = self.forward(x)
             loss = self.loss(y_pred, y)
@@ -45,12 +45,12 @@ class Model3FGL(nn.Module):
 
             # Keep track of the loss and accuracy
             running_loss += loss.item()
-            num_correct += (y_pred.argmax(1) == y).sum().item()
+            num_correct += (y_pred.argmax(1) == y.argmax(1)).sum().item()
             samples_done += len(x)
 
             epoch_acc = 100 * num_correct / samples_done
             print(f'[Epoch completion {samples_done:>4d}/{data_size:>4d}] Loss: {loss.item():>.5e} Epoch Accuracy: {epoch_acc:>.5f}%')
 
     def run_training(self, dataloader):
-        for i in range(self.num_epochs):
+        for _ in range(self.num_epochs):
             self._train_epoch(dataloader)

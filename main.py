@@ -20,8 +20,8 @@ out_data = data['out_data']
 # Creaste a dataloader
 in_tensor = torch.from_numpy(in_data).float()
 out_tensor = torch.from_numpy(out_data.astype(int)).long()
-out_onehot = F.one_hot(out_tensor, num_classes=2)
-dataset = torch.utils.data.TensorDataset(in_tensor, out_tensor)
+out_onehot = F.one_hot(out_tensor, num_classes=2).float()
+dataset = torch.utils.data.TensorDataset(in_tensor, out_onehot)
 dataloader = torch.utils.data.DataLoader(dataset, batch_size=params.optim.batch_size, shuffle=True)
 
 # Train the 3FGL model
