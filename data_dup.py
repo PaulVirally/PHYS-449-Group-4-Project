@@ -62,9 +62,37 @@ def extract_3fgl_features(data_path):
     out_data = np.isin(data['CLASS1'], agn_classes).astype(int)
     return in_data.T, out_data
 
-def data_dup(data_path, out_path):
-    # Get the features
-    in_data, out_data = extract_3fgl_features(data_path)
+def extract_4fgl_features(data_path):
+    # Open the fits file
+    hdul = fits.open(data_path)
+
+    # Extract the AGNs and the pulsars
+    classes = hdul[1].data['CLASS1']
+    agn_classes = ['psr  ', 'agn  ', 'FSRQ ', 'fsrq ', 'BLL  ', 'bll  ', 'BCU  ', 'bcu  ', 'RDG  ', 'rdg  ', 'NLSY1', 'nlsy1', 'ssrq ', 'sey  ']
+    pulsar_classes = ['PSR  ', 'psr  ']
+    agn_mask = np.isin(classes, agn_classes)
+    pulsar_mask = np.isin(classes, pulsar_classes)
+
+    # Combine the AGNs and pulsars
+    data = hdul[1].data[agn_mask | pulsar_mask]
+
+    # Extract the 16 features we need for 4fgl (minus the 6 Hardess Ratios, not in the dataset)
+    glat = data['GLAT']
+    glon = data['GLON']
+    ln_pivot_energy = np.log(data['Pivot_Energy'])
+    unc_lp_index = data['Unc_LP_Index']
+    lp_index = data['LP_Index']
+    lp_beta = data['LP_beta']
+    lp_sincurv = data['LP_SigCurv']
+    ln_energy_flux100 = np.log(data['Energy_Flux100'])
+    ln_unc_energy_flux100 = np.log(data['Unc_Energy_Flux100'])
+    ln_var_index = np.log(data['Variability_Index'])
+
+    in_data = np.vstack((glat, glon, ln_energy_flux100, ln_unc_energy_flux100, ln_var_index, ln_pivot_energy, lp_index, unc_lp_index, lp_beta, lp_sincurv))
+    out_data = np.isin(data['CLASS1'], agn_classes).astype(int)
+    return in_data.T, out_data
+
+def data_dup(out_path, in_data, out_data):
 
     # Get the indices of the AGNs and pulsars within the data
     agn_idxs = np.where(out_data == 1)[0]
@@ -95,12 +123,18 @@ def data_dup(data_path, out_path):
     np.savez(out_path, in_data=in_data, out_data=out_data)
 
 if __name__ == '__main__':
-    #python data_dup.py --data data/gll_psc_v16.fit --outfile data/over_3fgl
+    #python3 data_dup.py --data3fgl data/gll_psc_v16.fit --data4fgl data/gll_psc_v27.fit --outfile3fgl data/over_3fgl --outfile4fgl data/over_4fgl
     parser = argparse.ArgumentParser(description='Duplicates pulsars in dataset to even out number of AGNs and pulsars for oversampling')
-    parser.add_argument('--data', help='A file/path containing input data')
-    parser.add_argument('--outfile', help='Desired name of output file (include file path if needed, ex. data/over_3fgl)')
+    parser.add_argument('--data3fgl', help='A file/path containing input data')
+    parser.add_argument('--data4fgl', help='A file/path containing input data')
+    parser.add_argument('--outfile3fgl', help='Desired name of output file (include file path if needed, ex. data/over_3fgl)')
+    parser.add_argument('--outfile4fgl', help='Desired name of output file (include file path if needed, ex. data/over_3fgl)')
     
     args = parser.parse_args()
+    in_data3fgl, out_data3fgl = extract_3fgl_features(args.data3fgl)
+    in_data4fgl, out_data4fgl = extract_4fgl_features(args.data4fgl)
     
-    data_dup(args.data, args.outfile)
+    data_dup(args.outfile4fgl, in_data3fgl, out_data3fgl)
+    data_dup(args.outfile4fgl, in_data4fgl, out_data4fgl)
+
     print("Oversampling complete")
