@@ -87,8 +87,9 @@ def data_dup(data_path, out_path):
     out_data = np.hstack((out_data, np.zeros(oversample)))
 
     # Shuffle the data
-    rng.shuffle(in_data)
-    rng.shuffle(out_data)
+    perm = rng.permutation(in_data.shape[0])
+    in_data = in_data[perm, :]
+    out_data = out_data[perm]
 
     # Save the data
     np.savez(out_path, in_data=in_data, out_data=out_data)
