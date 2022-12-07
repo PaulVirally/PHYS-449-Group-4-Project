@@ -29,7 +29,7 @@ class Model3FGL(nn.Module):
     def forward(self, x):
         return self.network(x)
 
-    def train_epoch(self, dataloader, epoch):
+    def train_epoch(self, dataloader, epoch, quiet=False):
         self.network.train() # Ensure the network is in training mode
 
         data_size = len(dataloader.dataset)
@@ -54,7 +54,7 @@ class Model3FGL(nn.Module):
             print_count += len(x)
 
             # Report to the console
-            if print_count >= self.print_every:
+            if not quiet and print_count >= self.print_every:
                 print_count -= self.print_every
                 epoch_acc = 100 * num_correct / samples_done
                 epoch_loss = running_loss / samples_done
