@@ -19,12 +19,12 @@ def load_data(fpath):
     '''Load the data from an npz file'''
     # Load the data
     data = np.load(fpath)
-    in_data = data['in_data'].T
+    in_data = data['in_data']
     out_data = data['out_data']
 
     # Creaste a dataset
     in_tensor = torch.from_numpy(in_data).float()
-    out_tensor = torch.from_numpy(out_data.astype(int)).long()
+    out_tensor = torch.from_numpy(out_data).long()
     out_onehot = F.one_hot(out_tensor, num_classes=2).float()
     dataset = torch.utils.data.TensorDataset(in_tensor, out_onehot)
     return dataset
@@ -112,32 +112,32 @@ def vary_topology(params, dataset):
 if __name__ == '__main__':
     # Load the data and params
     params = load_params('params/params_3fgl.json')
-    dataset = load_data('data/3fgl_simple_data.npz')
+    dataset = load_data('data/over_3fgl.npz')
 
-    vary_topology(params, dataset)
+    # vary_topology(params, dataset)
 
-    # # Create the 3FGL model
-    # model3fgl = Model3FGL(params)
+    # Create the 3FGL model
+    model3fgl = Model3FGL(params)
 
-    # # Train the 3FGL model
-    # accuracies, losses = train_model(model3fgl, params, dataset) # TODO: Run the model with different toplologies and log the results
-    # epochs = np.arange(len(accuracies)) + 1
+    # Train the 3FGL model
+    accuracies, losses = train_model(model3fgl, params, dataset) # TODO: Run the model with different toplologies and log the results
+    epochs = np.arange(len(accuracies)) + 1
 
-    # # Smooth out the accuracies and losses
-    # acc_smooth = savgol_filter(accuracies, 11, 3)
-    # loss_smooth = savgol_filter(losses, 11, 3)
+    # Smooth out the accuracies and losses
+    acc_smooth = savgol_filter(accuracies, 11, 3)
+    loss_smooth = savgol_filter(losses, 11, 3)
 
-    # # Plot the accuracy and loss
-    # fig, ax = plt.subplots(1, 2, figsize=(12, 4), tight_layout=True)
-    # ax[0].plot(epochs, accuracies, label='Raw', alpha=0.25)
-    # ax[0].plot(epochs, acc_smooth, '--', color='C0', label='Smoothed')
-    # ax[0].set_xlabel('Epoch')
-    # ax[0].set_ylabel('Accuracy [%]')
-    # ax[0].legend()
-    # ax[1].plot(epochs, losses, label='Raw', alpha=0.25)
-    # ax[1].plot(epochs, loss_smooth, '--', color='C0', label='Smoothed')
-    # ax[1].set_xlabel('Epoch')
-    # ax[1].set_ylabel('Loss')
-    # ax[1].set_yscale('log')
-    # ax[1].legend()
-    # plt.show()
+    # Plot the accuracy and loss
+    fig, ax = plt.subplots(1, 2, figsize=(12, 4), tight_layout=True)
+    ax[0].plot(epochs, accuracies, label='Raw', alpha=0.25)
+    ax[0].plot(epochs, acc_smooth, '--', color='C0', label='Smoothed')
+    ax[0].set_xlabel('Epoch')
+    ax[0].set_ylabel('Accuracy [%]')
+    ax[0].legend()
+    ax[1].plot(epochs, losses, label='Raw', alpha=0.25)
+    ax[1].plot(epochs, loss_smooth, '--', color='C0', label='Smoothed')
+    ax[1].set_xlabel('Epoch')
+    ax[1].set_ylabel('Loss')
+    ax[1].set_yscale('log')
+    ax[1].legend()
+    plt.show()
