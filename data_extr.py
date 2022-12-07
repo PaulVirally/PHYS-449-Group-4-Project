@@ -3,7 +3,7 @@ import random
 import numpy as np
 from astropy.io import fits
 
-def extract_3fgl_features(data_path):
+def extract_3fgl(data_path, out_path):
     # Open the fits file
     hdul = fits.open(data_path)
 
@@ -60,9 +60,11 @@ def extract_3fgl_features(data_path):
 
     in_data = np.vstack((glat, glon, ln_energy_flux100, ln_unc_energy_flux100, ln_signif_curve, ln_var_index, hr12, hr23, hr34, hr45, mev_500_index))
     out_data = np.isin(data['CLASS1'], agn_classes).astype(int)
-    return in_data.T, out_data
 
-def extract_4fgl_features(data_path):
+    # Save Data
+    np.savez_compressed(out_path, in_data=in_data, out_data=out_data)
+
+def extract_4fgl(data_path, out_path):
     # Open the fits file
     hdul = fits.open(data_path)
 
@@ -90,51 +92,22 @@ def extract_4fgl_features(data_path):
 
     in_data = np.vstack((glat, glon, ln_energy_flux100, ln_unc_energy_flux100, ln_var_index, ln_pivot_energy, lp_index, unc_lp_index, lp_beta, lp_sincurv))
     out_data = np.isin(data['CLASS1'], agn_classes).astype(int)
-    return in_data.T, out_data
-
-def data_dup(out_path, in_data, out_data):
-
-    # Get the indices of the AGNs and pulsars within the data
-    agn_idxs = np.where(out_data == 1)[0]
-    pulsar_idxs = np.where(out_data == 0)[0]
-
-    # There are more AGNs than pulsars, so we need to oversample the pulsars
-    oversample = agn_idxs.size
-
-    # Randomly sample pulsars to get the same number as AGNs
-    rng = np.random.default_rng()
-    new_pulsar_idxs = rng.choice(pulsar_idxs, size=oversample)
-    new_pulsars = in_data[new_pulsar_idxs]
-
-    # Remove the old pulsars from the data
-    in_data = np.delete(in_data, new_pulsar_idxs, axis=0)
-    out_data = np.delete(out_data, new_pulsar_idxs, axis=0)
-
-    # Add the new pulsars to the data
-    in_data = np.vstack((in_data, new_pulsars))
-    out_data = np.hstack((out_data, np.zeros(oversample)))
-
-    # Shuffle the data
-    perm = rng.permutation(in_data.shape[0])
-    in_data = in_data[perm, :]
-    out_data = out_data[perm]
-
-    # Save the data
+    
+    # Save Data
     np.savez_compressed(out_path, in_data=in_data, out_data=out_data)
 
 if __name__ == '__main__':
-    #python3 data_dup.py --data3fgl data/gll_psc_v16.fit --data4fgl data/gll_psc_v27.fit --outfile3fgl data/over_3fgl --outfile4fgl data/over_4fgl
+    #python3 data_extr.py --data3fgl data/gll_psc_v16.fit --data4fgl data/gll_psc_v27.fit --outfile3fgl data/3fgl --outfile4fgl data/4fgl
     parser = argparse.ArgumentParser(description='Duplicates pulsars in dataset to even out number of AGNs and pulsars for oversampling')
     parser.add_argument('--data3fgl', help='A file/path containing input data')
     parser.add_argument('--data4fgl', help='A file/path containing input data')
-    parser.add_argument('--outfile3fgl', help='Desired name of output file (include file path if needed, ex. data/over_3fgl)')
-    parser.add_argument('--outfile4fgl', help='Desired name of output file (include file path if needed, ex. data/over_4fgl)')
+    parser.add_argument('--outfile3fgl', help='Desired name of output file (include file path if needed, ex. data/3fgl)')
+    parser.add_argument('--outfile4fgl', help='Desired name of output file (include file path if needed, ex. data/4fgl)')
     
     args = parser.parse_args()
-    in_data3fgl, out_data3fgl = extract_3fgl_features(args.data3fgl)
-    in_data4fgl, out_data4fgl = extract_4fgl_features(args.data4fgl)
-    
-    data_dup(args.outfile3fgl, in_data3fgl, out_data3fgl)
-    data_dup(args.outfile4fgl, in_data4fgl, out_data4fgl)
 
-    print("Oversampling complete")
+    extract_3fgl(args.data3fgl, args.outfile3fgl)
+    extract_4fgl(args.data4fgl, args.outfile4fgl)
+
+
+    print("Extraction complete")
