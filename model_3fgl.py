@@ -29,7 +29,7 @@ class Model3FGL(nn.Module):
     def forward(self, x):
         return self.network(x)
 
-    def _train_epoch(self, dataloader, epoch):
+    def train_epoch(self, dataloader, epoch):
         self.network.train() # Ensure the network is in training mode
 
         data_size = len(dataloader.dataset)
@@ -60,18 +60,7 @@ class Model3FGL(nn.Module):
                 epoch_loss = running_loss / samples_done
                 print(f'[Epoch {epoch+1:>3d}/{self.num_epochs:>3d}] [Epoch completion {samples_done:>4d}/{data_size:>4d}] Loss: {epoch_loss:>.5e} Epoch Accuracy: {epoch_acc:>.5f}%')
 
-    def run_training(self, train_dataloader, test_dataloader):
-        accurcies = np.zeros(self.num_epochs)
-        losses = np.zeros(self.num_epochs)
-        for epoch in range(self.num_epochs):
-            self._train_epoch(train_dataloader, epoch)
-            acc, loss = self._test(test_dataloader)
-            accurcies[epoch] = acc
-            losses[epoch] = loss
-
-        return accurcies, losses 
-
-    def _test(self, dataloader):
+    def test(self, dataloader):
         self.network.eval() # Ensure the network is in evaluation mode
 
         # Compute the accuracy and loss on the test set
@@ -85,6 +74,6 @@ class Model3FGL(nn.Module):
                 running_loss += loss.item()
                 num_correct += (y_pred.argmax(1) == y.argmax(1)).sum().item()
 
-        epoch_acc = 100 * num_correct / data_size
-        epoch_loss = running_loss / data_size
-        return epoch_acc, epoch_loss
+        accuracy = 100 * num_correct / data_size
+        loss = running_loss / data_size
+        return accuracy, loss
