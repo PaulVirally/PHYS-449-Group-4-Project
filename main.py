@@ -1,10 +1,11 @@
 from types import SimpleNamespace
 import json
-from model_3fgl import Model3FGL
 import torch
 import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.signal import savgol_filter
+from model_3fgl import Model3FGL
 
 def load_params(fpath):
     '''Load the parameters from a json file'''
@@ -70,13 +71,21 @@ if __name__ == '__main__':
     accuracies, losses = train_model(model3fgl, params, dataset)
     epochs = np.arange(len(accuracies)) + 1
 
+    # Smooth out the accuracies and losses
+    acc_smooth = savgol_filter(accuracies, 11, 3)
+    loss_smooth = savgol_filter(losses, 11, 3)
+
     # Plot the accuracy and loss
     fig, ax = plt.subplots(1, 2, figsize=(12, 4), tight_layout=True)
-    ax[0].plot(epochs, accuracies,)
+    ax[0].plot(epochs, accuracies, label='Raw', alpha=0.25)
+    ax[0].plot(epochs, acc_smooth, '--', color='C0', label='Smoothed')
     ax[0].set_xlabel('Epoch')
     ax[0].set_ylabel('Accuracy [%]')
-    ax[1].plot(epochs, losses)
+    ax[0].legend()
+    ax[1].plot(epochs, losses, label='Raw', alpha=0.25)
+    ax[1].plot(epochs, loss_smooth, '--', color='C0', label='Smoothed')
     ax[1].set_xlabel('Epoch')
     ax[1].set_ylabel('Loss')
     ax[1].set_yscale('log')
+    ax[1].legend()
     plt.show()
