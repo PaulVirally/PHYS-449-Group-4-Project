@@ -1,3 +1,5 @@
+import numpy as np
+import torch
 import torch.nn as nn
 import torch.optim as optim
 
@@ -22,18 +24,20 @@ class Model3FGL(nn.Module):
 
         # Number of epochs
         self.num_epochs = params.optim.num_epochs
+        self.print_every = params.optim.print_every
 
     def forward(self, x):
         return self.network(x)
 
-    def _train_epoch(self, dataloader):
-        self.network.train()
+    def _train_epoch(self, dataloader, epoch):
+        self.network.train() # Ensure the network is in training mode
 
         data_size = len(dataloader.dataset)
         running_loss = 0
         samples_done = 0
         num_correct = 0
-        for epoch, (x, y) in enumerate(dataloader):
+        print_count = 0
+        for x, y in dataloader:
             # Forward pass
             y_pred = self.forward(x)
             loss = self.loss(y_pred, y)
@@ -45,12 +49,42 @@ class Model3FGL(nn.Module):
 
             # Keep track of the loss and accuracy
             running_loss += loss.item()
-            num_correct += (y_pred.argmax(1) == y).sum().item()
+            num_correct += (y_pred.argmax(1) == y.argmax(1)).sum().item()
             samples_done += len(x)
+            print_count += len(x)
 
-            epoch_acc = 100 * num_correct / samples_done
-            print(f'[Epoch completion {samples_done:>4d}/{data_size:>4d}] Loss: {loss.item():>.5e} Epoch Accuracy: {epoch_acc:>.5f}%')
+            # Report to the console
+            if print_count >= self.print_every:
+                print_count -= self.print_every
+                epoch_acc = 100 * num_correct / samples_done
+                epoch_loss = running_loss / samples_done
+                print(f'[Epoch {epoch+1:>3d}/{self.num_epochs:>3d}] [Epoch completion {samples_done:>4d}/{data_size:>4d}] Loss: {epoch_loss:>.5e} Epoch Accuracy: {epoch_acc:>.5f}%')
 
-    def run_training(self, dataloader):
-        for i in range(self.num_epochs):
-            self._train_epoch(dataloader)
+    def run_training(self, train_dataloader, test_dataloader):
+        accurcies = np.zeros(self.num_epochs)
+        losses = np.zeros(self.num_epochs)
+        for epoch in range(self.num_epochs):
+            self._train_epoch(train_dataloader, epoch)
+            acc, loss = self._test(test_dataloader)
+            accurcies[epoch] = acc
+            losses[epoch] = loss
+
+        return accurcies, losses 
+
+    def _test(self, dataloader):
+        self.network.eval() # Ensure the network is in evaluation mode
+
+        # Compute the accuracy and loss on the test set
+        data_size = len(dataloader.dataset)
+        running_loss = 0
+        num_correct = 0
+        with torch.no_grad():
+            for x, y in dataloader:
+                y_pred = self.forward(x)
+                loss = self.loss(y_pred, y)
+                running_loss += loss.item()
+                num_correct += (y_pred.argmax(1) == y.argmax(1)).sum().item()
+
+        epoch_acc = 100 * num_correct / data_size
+        epoch_loss = running_loss / data_size
+        return epoch_acc, epoch_loss
