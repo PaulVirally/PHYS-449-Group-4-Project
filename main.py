@@ -66,10 +66,9 @@ def vary_topology(params, dataset, oversampled, fgl):
     '''Vary the topology of the model and save the results'''
     num_input = params.model.topology[0] 
     num_output = params.model.topology[-1]
-    # num_hidden_layers = 3 # TODO: Should this be a parameter to the function?
-    num_hidden_layers = 1 # TODO: Should this be a parameter to the function?
-    # num_neurons = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 32, 64, 128]
-    num_neurons = [6]
+    num_hidden_layers = 3 # TODO: Should this be a parameter to the function?
+    num_neurons = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]#, 32, 64, 128]
+    # num_neurons = [6]
     params.optim.num_epochs = 1000 # For consistency with the paper
 
     lr = str(params.optim.learning_rate).replace('.', 'p')
@@ -116,24 +115,24 @@ def vary_topology(params, dataset, oversampled, fgl):
 def vary_everything(params, dataset, oversampled, fgl):
     '''Vary the topology and activation functions model and save the results'''
     # ReLU
-    params.model.activation = 'relu'
-    vary_topology(params, dataset, oversampled, fgl)
+    # params.model.activation = 'relu'
+    # vary_topology(params, dataset, oversampled, fgl)
 
     # tanh
-    # params.optim.activation = 'tanh'
-    # vary_topology(params, dataset, oversampled, fgl)
+    params.optim.activation = 'tanh'
+    vary_topology(params, dataset, oversampled, fgl)
 
 if __name__ == '__main__':
     # Load the data and params
     params = load_params('params/params_3fgl.json')
     # params = load_params('params/params_4fgl.json')
-    dataset = load_data('data/3fgl.npz')
-    # dataset = load_data('data/over_3fgl.npz')
+    # dataset = load_data('data/3fgl.npz')
+    dataset = load_data('data/over_3fgl.npz')
     # dataset = load_data('data/4fgl.npz')
     # dataset = load_data('data/over_4fgl.npz')
 
     # vary_topology(params, dataset)
-    vary_everything(params, dataset, oversampled=False, fgl=3)
+    vary_everything(params, dataset, oversampled=True, fgl=3)
 
     # # Create the model
     # model = Model(params)

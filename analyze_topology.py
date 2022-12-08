@@ -12,6 +12,9 @@ for folder in folders:
     if folder == '.DS_Store':
         continue
 
+    if not folder.endswith('Adam'):
+        continue
+
     folder = os.path.join('results', folder)
     files = os.listdir(folder)
 
