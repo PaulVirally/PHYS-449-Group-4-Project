@@ -1,4 +1,4 @@
-from main import load_params, load_data, train_model
+from main import load_params, train_model
 from model import Model
 import torch
 import torch.nn.functional as F
