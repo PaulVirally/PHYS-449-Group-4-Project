@@ -1,6 +1,6 @@
 {
     "model" : {
-        "topology" : [11, 6, 2],
+        "topology" : [10, 6, 2],
         "activation" : "tanh"
     },
 
