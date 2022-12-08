@@ -1,5 +1,4 @@
 import argparse
-import random
 import numpy as np
 from astropy.io import fits
 
@@ -74,6 +73,11 @@ def extract_4fgl(data_path, out_path):
     pulsar_classes = ['PSR  ', 'psr  ']
     agn_mask = np.isin(classes, agn_classes)
     pulsar_mask = np.isin(classes, pulsar_classes)
+
+    # Some columns in the 4fgl dataset have bad data
+    bad_data_mask = np.isnan(hdul[1].data['Unc_LP_Index']) | np.isnan(hdul[1].data['LP_Index']) | np.isnan(hdul[1].data['LP_beta'])
+    agn_mask = agn_mask & ~bad_data_mask
+    pulsar_mask = pulsar_mask & ~bad_data_mask
 
     # Combine the AGNs and pulsars
     data = hdul[1].data[agn_mask | pulsar_mask]
