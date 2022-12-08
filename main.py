@@ -125,36 +125,36 @@ if __name__ == '__main__':
     # Load the data and params
     params = load_params('params/params_3fgl.json')
     # params = load_params('params/params_4fgl.json')
-    dataset = load_data('data/3fgl.npz')
-    # dataset = load_data('data/over_3fgl.npz')
+    # dataset = load_data('data/3fgl.npz')
+    dataset = load_data('data/over_3fgl.npz')
     # dataset = load_data('data/4fgl.npz')
     # dataset = load_data('data/over_4fgl.npz')
 
     # vary_topology(params, dataset)
-    vary_everything(params, dataset, oversampled=False, fgl=3)
+    # vary_everything(params, dataset, oversampled=True, fgl=3)
 
-    # # Create the model
-    # model = Model(params)
+    # Create the model
+    model = Model(params)
 
-    # # Train the model
-    # accuracies, losses = train_model(model, params, dataset) # TODO: Run the model with different toplologies and log the results
-    # epochs = np.arange(len(accuracies)) + 1
+    # Train the model
+    accuracies, losses = train_model(model, params, dataset) # TODO: Run the model with different toplologies and log the results
+    epochs = np.arange(len(accuracies)) + 1
 
-    # # Smooth out the accuracies and losses
-    # acc_smooth = savgol_filter(accuracies, 11, 3)
-    # loss_smooth = savgol_filter(losses, 11, 3)
+    # Smooth out the accuracies and losses
+    acc_smooth = savgol_filter(accuracies, 11, 3)
+    loss_smooth = savgol_filter(losses, 11, 3)
 
-    # # Plot the accuracy and loss
-    # fig, ax = plt.subplots(1, 2, figsize=(12, 4), tight_layout=True)
-    # ax[0].plot(epochs, accuracies, label='Raw', alpha=0.25)
-    # ax[0].plot(epochs, acc_smooth, '--', color='C0', label='Smoothed')
-    # ax[0].set_xlabel('Epoch')
-    # ax[0].set_ylabel('Accuracy [%]')
-    # ax[0].legend()
-    # ax[1].plot(epochs, losses, label='Raw', alpha=0.25)
-    # ax[1].plot(epochs, loss_smooth, '--', color='C0', label='Smoothed')
-    # ax[1].set_xlabel('Epoch')
-    # ax[1].set_ylabel('Loss')
-    # ax[1].set_yscale('log')
-    # ax[1].legend()
-    # plt.show()
+    # Plot the accuracy and loss
+    fig, ax = plt.subplots(1, 2, figsize=(12, 4), tight_layout=True)
+    ax[0].plot(epochs, accuracies, label='Raw', alpha=0.25)
+    ax[0].plot(epochs, acc_smooth, '--', color='C0', label='Smoothed')
+    ax[0].set_xlabel('Epoch')
+    ax[0].set_ylabel('Accuracy [%]')
+    ax[0].legend()
+    ax[1].plot(epochs, losses, label='Raw', alpha=0.25)
+    ax[1].plot(epochs, loss_smooth, '--', color='C0', label='Smoothed')
+    ax[1].set_xlabel('Epoch')
+    ax[1].set_ylabel('Loss')
+    ax[1].set_yscale('log')
+    ax[1].legend()
+    plt.show()
