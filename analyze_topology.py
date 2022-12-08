@@ -61,4 +61,4 @@ for row in axs:
     for ax in row:
         ax.legend()
 plt.show()
-plt.savefig('fig7.pdf')
+plt.savefig('figures/fig7.pdf')
