@@ -36,30 +36,38 @@ for folder in folders:
         accuracies[oversampled, activation_idx, layer_idx, neuron_idx] = acc
         losses[oversampled, activation_idx, layer_idx, neuron_idx] = loss
 
-fig, axs = plt.subplots(2, 3, figsize=(12, 4), tight_layout=True)
-for oversampled in range(2):
-    for activation_idx in range(2):
-        for layer_idx in range(3):
+for layer_idx in range(3):
+    fig_both, axs_both = plt.subplots(2, 1, figsize=(6, 8), tight_layout=True)
+    fig_acc, axs_acc = plt.subplots(1, 1, tight_layout=True)
+    for oversampled in range(2):
+        for activation_idx in range(2):
             label = f'{"ReLU" if activation_idx else "$tanh$"}{", oversampled" if oversampled else ""}'
 
-            ax = axs[0, layer_idx]
+            ax = axs_both[0]
             acc = accuracies[oversampled, activation_idx, layer_idx, :]
             ax.plot(hidden_neurons, acc, '-o', label=label)
             ax.set_title(f'{layer_idx+1} Hidden Layer{"s" if layer_idx > 0 else ""}')
             ax.set_xlabel('Neurons per hidden layer')
             ax.set_ylabel('Accuracy [%]')
+            ax.legend()
 
-            ax = axs[1, layer_idx]
+            ax = axs_both[1]
             loss = losses[oversampled, activation_idx, layer_idx, :]
             ax.plot(hidden_neurons, loss, '-o', label=label)
             ax.set_title(f'{layer_idx+1} Hidden Layer{"s" if layer_idx > 0 else ""}')
             ax.set_xlabel('Neurons per hidden layer')
             ax.set_ylabel('Loss')
             ax.set_yscale('log')
+            ax.legend()
 
-for row in axs:
-    for ax in row:
-        ax.legend()
+            ax = axs_acc
+            ax.plot(hidden_neurons, acc, '-o', label=label)
+            ax.set_title(f'{layer_idx+1} Hidden Layer{"s" if layer_idx > 0 else ""}')
+            ax.set_xlabel('Neurons per hidden layer')
+            ax.set_ylabel('Accuracy [%]')
+            ax.legend()
 
-plt.savefig('figures/fig7.pdf')
+    fig_acc.savefig(f'figures/fig7_{layer_idx+1}_layers_acc.pdf')
+    fig_both.savefig(f'figures/fig7_{layer_idx+1}_layers_acc_loss.pdf')
+
 plt.show()
