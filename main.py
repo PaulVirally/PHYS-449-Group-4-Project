@@ -29,7 +29,7 @@ def load_data(fpath):
     dataset = torch.utils.data.TensorDataset(in_tensor, out_onehot)
     return dataset
 
-def split_data(dataset, train_ratio=0.7):
+def split_data(params, dataset, train_ratio=0.7):
     '''Split the data into train and test sets'''
     # Split the data into train and test sets
     train_size = int(train_ratio * len(dataset))
@@ -50,7 +50,7 @@ def train_model(model, params, dataset, quiet=False):
     losses = np.zeros(num_epochs)
     for epoch in range(num_epochs):
         # The paper re-splits the train and test sets at each epoch
-        train_dataloader, test_dataloader = split_data(dataset, train_ratio=0.7) # TODO: Should train_ratio be in the the json file?
+        train_dataloader, test_dataloader = split_data(params, dataset, train_ratio=0.7) # TODO: Should train_ratio be in the the json file?
 
         # Train one epoch
         model.train_epoch(train_dataloader, epoch, quiet)
