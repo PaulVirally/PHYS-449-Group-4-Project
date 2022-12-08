@@ -19,6 +19,7 @@ for i, (over_folder, act_func) in enumerate(zip(over_folders, act_funcs)):
     ax_over.plot(epochs, acc_smooth, '--', color=f'C{i}', label=f'{act_func} Oversampled (Smoothed)')
     ax_over.set_xlabel('Epoch')
     ax_over.set_ylabel('Accuracy [%]')
+    ax_over.set_ylim(70, 100)
     ax_over.legend()
 fig_over.savefig('figures/[11, 6, 2]_oversampled.pdf')
 
@@ -32,6 +33,7 @@ for i, (under_folder, act_func) in enumerate(zip(under_folders, act_funcs)):
     ax_under.plot(epochs, acc_smooth, '--', color=f'C{i}', label=f'{act_func} (Smoothed)')
     ax_under.set_xlabel('Epoch')
     ax_under.set_ylabel('Accuracy [%]')
+    ax_under.set_ylim(70, 100)
     ax_under.legend()
 fig_under.savefig('figures/[11, 6, 2].pdf')
 

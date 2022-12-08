@@ -37,8 +37,8 @@ final_acc = acc[-1]
 ln_signif_curve = in_data[:, 0]
 ln_var_index = in_data[:, 1]
 
-xs = np.linspace(np.min(ln_var_index), np.max(ln_var_index), 10)
-ys = np.linspace(np.min(ln_signif_curve), np.max(ln_signif_curve), 10)
+xs = np.linspace(2.9, 8, num=10)
+ys = np.linspace(-3, 5, num=10)
 X, Y = np.meshgrid(xs, ys)
 
 X_flat = np.reshape(X, -1)
@@ -57,5 +57,7 @@ plt.colorbar(contour)
 plt.legend()
 plt.xlabel('ln(Variability Index)')
 plt.ylabel('ln(Significance Curvature)')
+plt.xlim(2.9, 8)
+plt.ylim(-3, 5)
 plt.savefig('figures/fig9.pdf')
 plt.show()
