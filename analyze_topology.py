@@ -60,5 +60,6 @@ for oversampled in range(2):
 for row in axs:
     for ax in row:
         ax.legend()
-plt.show()
+
 plt.savefig('figures/fig7.pdf')
+plt.show()
