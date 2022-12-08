@@ -24,6 +24,8 @@ class Model(nn.Module):
             # self.optimizer = optim.LBFGS(self.network.parameters(), lr=params.optim.learning_rate)
             self.optimizer = optim.LBFGS(self.network.parameters())
             # self.optimizer = optim.LBFGS(self.network.parameters(), history_size=10, max_iter=4)
+        elif params.optim.optim == 'SGD':
+            self.optimizer = optim.SGD(self.network.parameters(), lr=params.optim.learning_rate, momentum=0.9, nesterov=True)
         else:
             self.optimizer = optim.Adam(self.network.parameters(), lr=params.optim.learning_rate)
 
