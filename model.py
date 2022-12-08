@@ -3,8 +3,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
-# Fully connected neural network with one hidden layer
-class Model3FGL(nn.Module):
+class Model(nn.Module):
     def __init__(self, params):
         super().__init__()
 

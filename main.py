@@ -6,7 +6,7 @@ import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
-from model_3fgl import Model3FGL
+from model import Model
 
 def load_params(fpath):
     '''Load the parameters from a json file'''
@@ -83,7 +83,7 @@ def vary_topology(params, dataset, oversampled):
             params.model.topology = topology
 
             # Create the model
-            model = Model3FGL(params)
+            model = Model(params)
 
             # Train the model
             accuracies, losses = train_model(model, params, dataset, quiet=True)
@@ -123,18 +123,21 @@ def vary_everything(params, dataset, oversampled):
 
 if __name__ == '__main__':
     # Load the data and params
-    params = load_params('params/params_3fgl.json')
+    # params = load_params('params/params_3fgl.json')
+    params = load_params('params/params_4fgl.json')
     # dataset = load_data('data/over_3fgl.npz')
-    dataset = load_data('data/3fgl.npz')
+    # dataset = load_data('data/3fgl.npz')
+    # dataset = load_data('data/over_4fgl.npz')
+    dataset = load_data('data/4fgl.npz')
 
     # vary_topology(params, dataset)
     # vary_everything(params, dataset, oversampled=False)
 
-    # Create the 3FGL model
-    model3fgl = Model3FGL(params)
+    # Create the model
+    model = Model(params)
 
-    # Train the 3FGL model
-    accuracies, losses = train_model(model3fgl, params, dataset) # TODO: Run the model with different toplologies and log the results
+    # Train the model
+    accuracies, losses = train_model(model, params, dataset) # TODO: Run the model with different toplologies and log the results
     epochs = np.arange(len(accuracies)) + 1
 
     # Smooth out the accuracies and losses
