@@ -15,7 +15,7 @@ for i, (over_folder, act_func) in enumerate(zip(over_folders, act_funcs)):
     acc = data['accuracies']
     acc_smooth = savgol_filter(acc, 11, 3)
     epochs = np.arange(len(acc)) + 1
-    ax_over.plot(epochs, acc, '-', alpha=0.25, color=f'C{i}', label=f'{act_func} Oversampled (Smoothed)')
+    ax_over.plot(epochs, acc, '-', alpha=0.25, color=f'C{i}', label=f'{act_func} Oversampled')
     ax_over.plot(epochs, acc_smooth, '--', color=f'C{i}', label=f'{act_func} Oversampled (Smoothed)')
     ax_over.set_xlabel('Epoch')
     ax_over.set_ylabel('Accuracy [%]')
