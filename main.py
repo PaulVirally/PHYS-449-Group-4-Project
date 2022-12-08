@@ -62,7 +62,7 @@ def train_model(model, params, dataset, quiet=False):
 
     return accuracies, losses
 
-def vary_topology(params, dataset, oversampled):
+def vary_topology(params, dataset, oversampled, fgl):
     '''Vary the topology of the model and save the results'''
     num_input = params.model.topology[0] 
     num_output = params.model.topology[-1]
@@ -90,7 +90,7 @@ def vary_topology(params, dataset, oversampled):
             print(f'Topology: {topology}, Accuracy: {accuracies[-1]:.5f}, Loss: {losses[-1]:.5e}')
 
             # Save the results
-            np.savez_compressed(f'{results_dir}/3fgl_{topology}.npz', accuracies=accuracies, losses=losses, params=params)
+            np.savez_compressed(f'{results_dir}/{fgl}fgl_{topology}.npz', accuracies=accuracies, losses=losses, params=params)
 
             # Plot the results and save the figure
             epochs = np.arange(len(accuracies)) + 1
@@ -108,30 +108,30 @@ def vary_topology(params, dataset, oversampled):
             ax[1].set_ylabel('Loss')
             ax[1].set_yscale('log')
             ax[1].legend()
-            fig.savefig(f'{fig_dir}/3fgl_{topology}.pdf')
+            fig.savefig(f'{fig_dir}/{fgl}fgl_{topology}.pdf')
             plt.close()
 
-def vary_everything(params, dataset, oversampled):
+def vary_everything(params, dataset, oversampled, fgl):
     '''Vary the topology and activation functions model and save the results'''
     # ReLU
     params.model.activation = 'relu'
-    vary_topology(params, dataset, oversampled)
+    vary_topology(params, dataset, oversampled, fgl)
 
     # tanh
     params.optim.activation = 'tanh'
-    vary_topology(params, dataset, oversampled)
+    vary_topology(params, dataset, oversampled, fgl)
 
 if __name__ == '__main__':
     # Load the data and params
     # params = load_params('params/params_3fgl.json')
     params = load_params('params/params_4fgl.json')
-    # dataset = load_data('data/over_3fgl.npz')
+    dataset = load_data('data/over_3fgl.npz')
     # dataset = load_data('data/3fgl.npz')
     # dataset = load_data('data/over_4fgl.npz')
-    dataset = load_data('data/4fgl.npz')
+    # dataset = load_data('data/4fgl.npz')
 
     # vary_topology(params, dataset)
-    # vary_everything(params, dataset, oversampled=False)
+    # vary_everything(params, dataset, oversampled=True, fgl=4)
 
     # Create the model
     model = Model(params)
