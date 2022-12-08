@@ -8,8 +8,8 @@ from main import load_params, train_model, load_data
 from model import Model
 
 # Load the parameters
-params = load_params('params/params_4fgl.json')
-params.optim.num_epochs = 1000
+params = load_params('params/params_3fgl.json')
+params.optim.num_epochs = 10000
 
 params_adam = deepcopy(params)
 params_adam.optim.optim = 'Adam'
@@ -18,7 +18,7 @@ params_sgd = deepcopy(params)
 params_sgd.optim.optim = 'SGD'
 
 # Load the data
-dataset = load_data('data/over_4fgl.npz')
+dataset = load_data('data/3fgl.npz')
 
 # Train the models
 model_adam = Model(params_adam)
@@ -33,7 +33,7 @@ losses_adam_smooth = savgol_filter(losses_adam, 11, 3)
 losses_sgd_smooth = savgol_filter(losses_sgd, 11, 3)
 
 # Plot the accuracies and losses
-fig, ax = plt.subplots(1, 2, figsize=(12, 4), tight_layout=True)
+fig, ax = plt.subplots(2, 1, figsize=(12, 4), tight_layout=True)
 epochs = np.arange(len(accuracies_adam)) + 1
 ax[0].plot(epochs, accuracies_adam, alpha=0.25, color='C0', label='Adam')
 ax[0].plot(epochs, accuracies_adam_smooth, color='C0', label='Adam (smoothed)')

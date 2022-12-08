@@ -3,7 +3,7 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 
-hidden_neurons = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 32, 64, 128]
+hidden_neurons = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]#, 32, 64, 128]
 accuracies = np.zeros((2, 2, 3, len(hidden_neurons)))
 losses = np.zeros((2, 2, 3, len(hidden_neurons)))
 
@@ -31,6 +31,8 @@ for folder in folders:
         acc = data['accuracies'][-1]
         loss = data['losses'][-1]
 
+        if num_neurons not in hidden_neurons:
+            continue
         neuron_idx = hidden_neurons.index(num_neurons)
         layer_idx = num_hidden - 1
         accuracies[oversampled, activation_idx, layer_idx, neuron_idx] = acc
