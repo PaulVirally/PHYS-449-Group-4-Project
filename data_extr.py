@@ -94,7 +94,7 @@ def extract_4fgl(data_path, out_path):
     out_data = np.isin(data['CLASS1'], agn_classes).astype(int)
     
     # Save Data
-    np.savez_compressed(out_path, in_data=in_data, out_data=out_data)
+    np.savez_compressed(out_path, in_data=in_data.T, out_data=out_data)
 
 if __name__ == '__main__':
     #python3 data_extr.py --data3fgl data/gll_psc_v16.fit --data4fgl data/gll_psc_v27.fit --outfile3fgl data/3fgl --outfile4fgl data/4fgl
