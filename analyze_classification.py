@@ -49,12 +49,11 @@ sgn = 2 * np.argmax(nn_output, axis=1) - 1
 nn_output = ((np.max(nn_output, axis=1) * sgn) + 1) / 2
 nn_output = np.reshape(nn_output, X.shape)
 
-contour = plt.contourf(X, Y, nn_output, levels=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], cmap='bwr')
-plt.scatter(ln_var_index, ln_signif_curve, s=1, c=out_data, cmap='bwr')
-plt.plot(ln_var_index[[out_data == 0][0]], ln_signif_curve[[out_data == 0][0]], '.', color='blue', label='Pulsar')
-plt.plot(ln_var_index[[out_data == 1][0]], ln_signif_curve[[out_data == 1][0]], '.', color='red', label='AGN')
+contour = plt.contourf(X, Y, nn_output, levels=[0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0], cmap='GnBu')
+plt.scatter(ln_var_index, ln_signif_curve, s=1, c=out_data, cmap='GnBu')
+plt.plot(ln_var_index[[out_data == 1][0]], ln_signif_curve[[out_data == 1][0]], '.', color='#183755', label='AGN')
+plt.plot(ln_var_index[[out_data == 0][0]], ln_signif_curve[[out_data == 0][0]], '.', color='#5ea340', label='Pulsar')
 plt.colorbar(contour)
-plt.savefig('figures/fig9.pdf')
 plt.legend()
 plt.xlabel('ln(Variability Index)')
 plt.ylabel('ln(Significance Curvature)')
