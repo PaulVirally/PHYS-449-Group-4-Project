@@ -1,14 +1,15 @@
 import os
-import re
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
 
+# Define the parameters
 topology = '[11, 6, 2]'
 act_funcs = ['tanh', 'relu']
 over_folders = ['results/oversampled_tanh_LR0p001_Adam', 'results/oversampled_relu_LR0p001_Adam']
 under_folders = ['results/tanh_LR0p001_Adam', 'results/relu_LR0p001_Adam']
 
+# Plot the accuracies
 fig_over, ax_over = plt.subplots(1, 1, tight_layout=True)
 for i, (over_folder, act_func) in enumerate(zip(over_folders, act_funcs)):
     data = np.load(os.path.join(over_folder, f'3fgl_{topology}.npz'))
@@ -23,6 +24,7 @@ for i, (over_folder, act_func) in enumerate(zip(over_folders, act_funcs)):
     ax_over.legend()
 fig_over.savefig('figures/[11, 6, 2]_oversampled.pdf')
 
+# Plot the accuracies
 fig_under, ax_under = plt.subplots(1, 1, tight_layout=True)
 for i, (under_folder, act_func) in enumerate(zip(under_folders, act_funcs)):
     data = np.load(os.path.join(under_folder, f'3fgl_{topology}.npz'))
