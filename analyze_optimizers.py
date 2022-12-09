@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import savgol_filter
-from main import load_params, train_model, load_data
+from train import load_params, train_model, load_data
 from model import Model
 
 # Load the parameters

@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from main import load_params, load_data, train_model
+from train import load_params, load_data, train_model
 from model import Model
 
 # Load the data and params
