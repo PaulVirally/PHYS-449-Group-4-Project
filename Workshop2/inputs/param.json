@@ -1,0 +1,13 @@
+{
+	"data":{
+		"n_training_data": 10e2,
+		"n_test_data": 1e2,
+        "n_bits": 8,
+        "n_hidden": 100
+	},
+	"exec":{
+		"learning_rate": 3e-1,
+		"num_epochs": 2e4,
+		"display_epochs": 1e2
+	}
+}
