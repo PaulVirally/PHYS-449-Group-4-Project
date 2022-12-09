@@ -22,7 +22,7 @@ def load_data(fpath):
     in_data = data['in_data']
     out_data = data['out_data']
 
-    # Creaste a dataset
+    # Create a dataset
     in_tensor = torch.from_numpy(in_data).float()
     out_tensor = torch.from_numpy(out_data).long()
     out_onehot = F.one_hot(out_tensor, num_classes=2).float()
@@ -68,7 +68,7 @@ def vary_topology(params, dataset, oversampled, fgl):
     num_output = params.model.topology[-1]
     num_hidden_layers = 3 # TODO: Should this be a parameter to the function?
     num_neurons = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]#, 32, 64, 128]
-    params.optim.num_epochs = 1000 # For consistency with the paper
+    params.optim.num_epochs = 1000 # This is for consistency with the paper
 
     lr = str(params.optim.learning_rate).replace('.', 'p')
     results_dir = f'results/{"oversampled_" if oversampled else ""}{params.model.activation}_LR{lr}_{params.optim.optim}'

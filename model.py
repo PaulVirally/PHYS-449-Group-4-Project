@@ -7,7 +7,7 @@ class Model(nn.Module):
     def __init__(self, params):
         super().__init__()
 
-        # The network is defined by the topology
+        # The network is defined by the topology(input-hiddenlayers-output)
         topology = params.model.topology
         activation = params.model.activation
         self.network = nn.Sequential()
@@ -18,7 +18,7 @@ class Model(nn.Module):
         # Cross entropy loss
         self.loss_fn = nn.CrossEntropyLoss()
 
-        # Optimizer
+        # The Optimizer
         self.lbfgs = params.optim.optim == 'LBFGS'
         if self.lbfgs:
             # self.optimizer = optim.LBFGS(self.network.parameters(), lr=params.optim.learning_rate)
@@ -48,7 +48,7 @@ class Model(nn.Module):
             loss = closure()
             return loss
 
-        # Simply return the output of the loss function if we are not using LBFGS
+        # If LBFGS is not being used, simply return the output of the loss function 
         return self.loss_fn(y_pred, y)
 
     def forward(self, x):
