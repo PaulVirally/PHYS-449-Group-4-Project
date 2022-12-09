@@ -5,6 +5,7 @@ import torch.optim as optim
 
 class Model(nn.Module):
     def __init__(self, params):
+        '''Initialize the model'''
         super().__init__()
 
         # The network is defined by the topology(input-hiddenlayers-output)
@@ -34,6 +35,7 @@ class Model(nn.Module):
         self.print_every = params.optim.print_every
 
     def loss(self, y_pred, y, train=False, x=None):
+        '''Compute the loss function and perform a step of the optimizer if needed'''
         if self.lbfgs and train:
             def closure():
                 if torch.is_grad_enabled():
@@ -52,9 +54,11 @@ class Model(nn.Module):
         return self.loss_fn(y_pred, y)
 
     def forward(self, x):
+        '''Forward pass through the network'''
         return self.network(x)
 
     def train_epoch(self, dataloader, epoch, quiet=False):
+        '''Train the network for one epoch'''
         self.network.train() # Ensure the network is in training mode
 
         data_size = len(dataloader.dataset)
@@ -87,6 +91,7 @@ class Model(nn.Module):
                 print(f'[Epoch {epoch+1:>3d}/{self.num_epochs:>3d}] [Epoch completion {samples_done:>4d}/{data_size:>4d}] Loss: {epoch_loss:>.5e} Epoch Accuracy: {epoch_acc:>.5f}%')
 
     def test(self, dataloader):
+        '''Test the network'''
         self.network.eval() # Ensure the network is in evaluation mode
 
         # Compute the accuracy and loss on the test set

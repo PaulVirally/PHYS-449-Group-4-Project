@@ -3,6 +3,7 @@ import numpy as np
 from astropy.io import fits
 
 def extract_3fgl(data_path, out_path):
+    '''Extract the features from the 3fgl dataset'''
     # Open the fits file
     hdul = fits.open(data_path)
 
@@ -64,6 +65,7 @@ def extract_3fgl(data_path, out_path):
     np.savez_compressed(out_path, in_data=in_data.T, out_data=out_data)
 
 def extract_4fgl(data_path, out_path):
+    '''Extract the features from the 4fgl dataset'''
     # Open the fits file
     hdul = fits.open(data_path)
 

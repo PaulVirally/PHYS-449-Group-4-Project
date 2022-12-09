@@ -3,6 +3,7 @@ import numpy as np
 from astropy.io import fits
 
 def extract_3fgl_features(data_path):
+    '''Extract the features from the 3fgl dataset'''
     # Open the fits file
     hdul = fits.open(data_path)
 
@@ -62,6 +63,7 @@ def extract_3fgl_features(data_path):
     return in_data.T, out_data
 
 def extract_4fgl_features(data_path):
+    '''Extract the features from the 4fgl dataset'''
     # Open the fits file
     hdul = fits.open(data_path)
 
@@ -97,6 +99,7 @@ def extract_4fgl_features(data_path):
     return in_data.T, out_data
 
 def data_dup(out_path, in_data, out_data):
+    '''Duplicate the pulsar data to balance the dataset'''
 
     # Get the indices of the AGNs and pulsars within the data
     agn_idxs = np.where(out_data == 1)[0]
