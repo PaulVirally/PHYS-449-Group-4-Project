@@ -3,10 +3,12 @@ import re
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Define the parameters
 hidden_neurons = [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]#, 32, 64, 128]
 accuracies = np.zeros((2, 2, 3, len(hidden_neurons)))
 losses = np.zeros((2, 2, 3, len(hidden_neurons)))
 
+# Loop over the folders
 folders = os.listdir('results')
 for folder in folders:
     if folder == '.DS_Store':
@@ -24,10 +26,11 @@ for folder in folders:
 
     regex = re.compile('\[.*\]')
     for file in files:
-
+        # Extract the topology
         topology_str = regex.findall(file)[0]
         topology = list(map(int, topology_str[1:-1].split(', ')))
 
+        # Extract the number of hidden layers and neurons
         num_hidden = len(topology) - 2
         num_neurons = topology[1]
         data = np.load(os.path.join(folder, file))
@@ -41,6 +44,7 @@ for folder in folders:
         accuracies[oversampled, activation_idx, layer_idx, neuron_idx] = acc
         losses[oversampled, activation_idx, layer_idx, neuron_idx] = loss
 
+# Plot the results
 for layer_idx in range(3):
     fig, ax = plt.subplots(1, 1, tight_layout=True)
     for oversampled in range(2):
