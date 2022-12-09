@@ -9,9 +9,18 @@ Group Members:
 * [Ronaldo Del Young](https://github.com/N4ldoDelly)
 
 ## Data
-*The data provided by NASA, the data we've generated*
 
-## Figures we are reproducing
+The data provided by NASA are follows:
+For the 3FGL - `data/gll_psc_v16.fit`
+For the 4FGL - `data/gll_psc_v27.fit`
+
+The `data/3fgl.npz` and `data/4fgl.npz` data was created using (data_extr.py) to make it easier to read and the:
+`data/over_3fgl.npz` and `data/over_4fgl.npz` were created using (data_dup.py) by extracting the features and then adding duplicated pulsar values until there was an equal amount of pulsars and agns.
+
+## Figures we are reproduced
+
+The figures we reproduced were figure 7, `/figures/fig7_2_layers_acc.pdf` , figure 9,`/figures/fig9.pdf`  and figure 12,`/figures/fig12.pdf`
+We also generated other plots with different comparisons which can all be found in `/figures/`
 
 ## Description of files
 
