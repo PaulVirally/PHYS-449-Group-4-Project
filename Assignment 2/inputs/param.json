@@ -1,0 +1,14 @@
+{
+	"data_hp":{
+		"n_training_data": [:,-3000],
+		"n_test_data": [-3000:, :-1]
+        "n_bits": 14*14,
+        "n_hidden": 512
+	},
+	"exec":{
+		"learning_rate": 1e-2,
+		"num_epochs": 15,
+        "batch_size" : 500
+		"display_epochs": 1
+	}
+}
