@@ -14,4 +14,9 @@ Group Members:
 ## Figures we are reproducing
 
 ## Code to run
-*Instructions for how to run our code, which files to run to do what*
+
+### train.py
+```sh
+python3 train.py
+```
+Running this file will generate the training curves (accuracy & loss vs epochs) for various topologies as they are defined in the code. The files `params/params_3fgl.json`, `params/params_4fgl.json` are used for the hyperparameters.
